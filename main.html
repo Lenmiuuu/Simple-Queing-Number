@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Simple Queing Number</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@700&display=swap');
+
+  :root {
+    --color-bg: #ffffff;
+    --color-text: #374151;
+    --color-gray: #6b7280;
+    --color-primary: #111827;
+    --border-radius: 0.75rem;
+    --shadow-light: 0 4px 12px rgb(0 0 0 / 0.1);
+    --transition-speed: 0.3s;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    margin: 0;
+    background-color: var(--color-bg);
+    font-family: 'Poppins', sans-serif;
+    color: var(--color-text);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 2rem;
+  }
+
+  .container {
+    max-width: 400px;
+    width: 100%;
+    background: #f9fafb;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-light);
+    padding: 3rem 2rem;
+    text-align: center;
+    user-select: none;
+  }
+
+  h1 {
+    font-size: 5rem;
+    margin: 0 0 1rem 0;
+    color: var(--color-primary);
+    line-height: 1;
+  }
+
+  p {
+    color: var(--color-gray);
+    font-size: 1.125rem;
+    margin: 0 0 2rem 0;
+  }
+
+  button {
+    background-color: var(--color-primary);
+    border: none;
+    color: white;
+    font-size: 1.25rem;
+    font-weight: 700;
+    padding: 0.75rem 3rem;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: background-color var(--transition-speed), transform var(--transition-speed);
+    box-shadow: 0 4px 8px rgb(17 24 39 / 0.3);
+  }
+
+  button:hover,
+  button:focus {
+    background-color: #1f2937;
+    transform: scale(1.05);
+    outline: none;
+  }
+
+  button:active {
+    transform: scale(0.98);
+  }
+</style>
+</head>
+<body>
+  <main class="container" role="main" aria-label="Queue number system">
+    <h1 id="queue-number" aria-live="polite" aria-atomic="true">1</h1>
+    <p>Current Queue Number</p>
+    <button id="next-btn" aria-describedby="desc-next">Next Number</button>
+    <p id="desc-next" class="visually-hidden">Press to get the next queue number from 1 to 100</p>
+  </main>
+
+  <script>
+    (function() {
+      const maxNumber = 100;
+      let currentNumber = 0;
+
+      const numberDisplay = document.getElementById('queue-number');
+      const nextBtn = document.getElementById('next-btn');
+      let popup = null;
+
+      function updateDisplay() {
+        numberDisplay.textContent = currentNumber;
+      }
+
+      function openPopup(number) {
+        const popupWidth = 1000;
+        const popupHeight = 800;
+        const left = (window.screen.width / 2) - (popupWidth / 2);
+        const top = (window.screen.height / 2) - (popupHeight / 2);
+
+        if (popup && !popup.closed) {
+          popup.focus();
+          popup.document.body.innerHTML = popupContent(number);
+          return;
+        }
+
+        popup = window.open(
+          '',
+          'QueueNumberPopup',
+          `width=${popupWidth},height=${popupHeight},top=${top},left=${left},resizable=no,scrollbars=no`
+        );
+
+        if (popup) {
+          popup.document.title = 'Queue Number';
+          popup.document.body.style.margin = '0';
+          popup.document.body.style.display = 'flex';
+          popup.document.body.style.justifyContent = 'center';
+          popup.document.body.style.alignItems = 'center';
+          popup.document.body.style.height = '100vh';
+          popup.document.body.style.fontFamily = "'Poppins', sans-serif";
+          popup.document.body.style.backgroundColor = '#f9fafb';
+          popup.document.body.style.borderRadius = '0.75rem';
+          popup.document.body.innerHTML = popupContent(number);
+          popup.focus();
+        } else {
+          alert("Popup blocked! Please allow popups for this site.");
+        }
+      }
+
+    function popupContent(number) {
+        return `
+            <div style="
+            background: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Poppins', sans-serif;
+            text-align: center;
+            padding: 1rem;
+            ">
+            <div style="
+                font-size: 2rem;
+                font-weight: 1000;
+                color: #FF0000;
+                margin-bottom: 1rem;
+            ">FOR SIGNING OF CLEARANCE</div>
+            
+            <div style="
+                font-size: 2rem;
+                font-weight: 700;
+                color: #374151;
+                margin-bottom: 1rem;
+            ">Now Serving...</div>
+            
+            <span style="
+                font-size: 25rem;
+                font-weight: 700;
+                color: #03045e;
+                user-select: none;
+            ">${number}</span>
+
+            <div style="
+                font-size: 1.25rem;
+                font-weight: 500;
+                color: #111827;
+                margin-top: 1rem;
+            ">No number? Have your number inside the clinic</div>
+            </div>
+        `;
+        }
+
+      nextBtn.addEventListener('click', () => {
+        currentNumber++;
+        if (currentNumber > maxNumber) {
+          currentNumber = 1;
+        }
+        updateDisplay();
+        openPopup(currentNumber);
+      });
+
+      updateDisplay();
+
+    })();
+  </script>
+</body>
+</html>
